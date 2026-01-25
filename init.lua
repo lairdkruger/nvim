@@ -1,0 +1,7 @@
+require("base")
+require("ui")
+require("lsp")
+require("git")
+require("autocomplete")
+require("format")
+require("search")
