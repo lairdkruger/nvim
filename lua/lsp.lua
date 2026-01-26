@@ -19,6 +19,10 @@ vim.lsp.enable({
   "ts_ls",
 })
 
+vim.lsp.config("css_variables", {
+  filetypes = { "css", "scss", "less", "html", "svelte", "astro" },
+})
+
 -- Diagnostics configuration
 vim.diagnostic.config({
   severity_sort = true,
