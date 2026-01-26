@@ -6,6 +6,7 @@ vim.pack.add({
 })
 
 -- Font: IosevkaTerm Nerd Font
+-- Colorscheme
 require('evergarden').setup({
   theme = {
     variant = "fall",
@@ -21,20 +22,28 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 -- Status line
-_G.git_branch = function()
-  local branch = vim.fn.systemlist("git rev-parse --abbrev-ref HEAD 2>/dev/null")[1]
-  if branch == nil or branch == "" or branch == "HEAD" then
-    return ""
-  end
-  return " " .. branch
-end
+vim.g.git_branch = ""
+vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
+  callback = function()
+    local branch = vim.fn.systemlist("git rev-parse --abbrev-ref HEAD 2>/dev/null")[1]
+    if branch == nil or branch == "" or branch == "HEAD" then
+      vim.g.git_branch = ""
+      return
+    end
+    vim.g.git_branch = " " .. branch
+  end,
+})
 
-vim.o.statusline = "%f %y %m %= %{v:lua.git_branch()} %l:%c"
+vim.o.statusline = "%f %y %m %= %{g:git_branch} %l:%c"
 
 -- File explorer
+-- https://github.com/nvim-tree/nvim-tree.lua
 require("nvim-tree").setup({
   disable_netrw = true,
   sync_root_with_cwd = true,
+  view = {
+    signcolumn = "no",
+  },
   renderer = {
     icons = {
       web_devicons = {
@@ -74,22 +83,57 @@ require("nvim-tree").setup({
   },
 })
 
--- Startup layout
+-- Terminal
+_G.term_bufnr = nil
+
+function open_terminal()
+  vim.cmd("botright split") -- open split at bottom
+  vim.cmd("resize 12")      -- set height
+  vim.cmd("terminal")       -- open terminal
+  local buf = vim.api.nvim_get_current_buf()
+  _G.term_bufnr = buf       -- save buffer number
+
+  vim.api.nvim_buf_set_option(buf, "number", false)
+  vim.api.nvim_buf_set_option(buf, "relativenumber", false)
+  vim.api.nvim_buf_set_option(buf, "signcolumn", "no")
+
+  -- enter insert mode
+  vim.cmd("startinsert")
+end
+
+local function toggle_terminal()
+  if _G.term_bufnr and vim.api.nvim_buf_is_valid(_G.term_bufnr) then
+    -- check if the terminal window is open
+    for _, win in ipairs(vim.api.nvim_list_wins()) do
+      if vim.api.nvim_win_get_buf(win) == _G.term_bufnr then
+        vim.api.nvim_win_close(win, true)
+        return
+      end
+    end
+    -- if terminal buffer exists but no window, open it again
+    vim.cmd("botright split")
+    vim.cmd("resize 12")
+    vim.api.nvim_set_current_buf(_G.term_bufnr)
+    vim.cmd("startinsert")
+  else
+    open_terminal()
+  end
+end
+
+vim.keymap.set("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Move to left window from terminal" })
+vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "Move to below window from terminal" })
+vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", { desc = "Move to above window from terminal" })
+vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l", { desc = "Move to right window from terminal" })
+vim.keymap.set("n", "<leader>t", toggle_terminal, { desc = "Toggle terminal" })
+vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { desc = "Toggle nvim-tree" })
+
+-- Startup: toggle nvim-tree
 vim.api.nvim_create_autocmd("VimEnter", {
+  desc = "Open nvim-tree on startup",
+  group = vim.api.nvim_create_augroup("kickstart-nvim-tree-on-startup", { clear = true }),
   callback = function()
-    -- Initial buffer
-    vim.cmd("enew") -- create a new empty buffer
-
-    local api = require("nvim-tree.api")
-    api.tree.open()
-
-    -- Terminal
-    vim.cmd("botright split") -- create a new split at the bottom
-    vim.cmd("resize 15")      -- set height of terminal (15 lines)
-    vim.cmd("terminal")       -- open terminal in that split
-
-    -- Move focus back to main buffer
-    vim.cmd("wincmd k") -- move cursor up to the buffer
+    require("nvim-tree.api").tree.open()
   end,
 })
 

@@ -8,6 +8,7 @@ vim.opt.winborder = "rounded"
 vim.opt.cursorline = true
 vim.opt.number = true
 vim.opt.signcolumn = "yes"
+vim.opt.fillchars = { eob = " " }
 
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
