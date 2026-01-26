@@ -40,7 +40,8 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-  pattern = "*",
+  pattern =
+  "astro, bash, c, cpp, css, glsl, go, graphql, grok, html, javascript, json, lua, markdown, python, rust, scss, sql, svelte, tsx, typescript, wgsl, yaml, zig, zsh",
   callback = function(args)
     local ignored_filetypes = { "NvimTree", "TelescopePrompt", "TelescopeResults" }
     if vim.tbl_contains(ignored_filetypes, vim.bo[args.buf].filetype) then

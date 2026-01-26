@@ -82,6 +82,7 @@ require("nvim-tree").setup({
     },
   },
 })
+vim.api.nvim_set_hl(0, "NvimTreeGitIgnored", { italic = true })
 
 -- Terminal
 _G.term_bufnr = nil
