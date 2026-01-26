@@ -6,8 +6,17 @@ local lspconfig = require("lspconfig")
 
 vim.lsp.enable({
 	"lua_ls",
-	"ts_ls",
 	"astro",
+	"copilot",
+	"css_variables",
+	"cssls",
+	"eslint",
+	"graphql",
+	"html",
+	"rust_analyzer",
+	"shopify_theme_ls",
+	"svelte",
+	"ts_ls",
 })
 
 -- Diagnostics configuration

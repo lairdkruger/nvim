@@ -5,11 +5,23 @@ vim.pack.add({
 	"https://github.com/folke/which-key.nvim",
 })
 
+-- Font: IosevkaTerm Nerd Font
 vim.cmd([[colorscheme tokyonight]])
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
--- nvim-tree configuration
+-- Status line
+_G.git_branch = function()
+	local branch = vim.fn.systemlist("git rev-parse --abbrev-ref HEAD 2>/dev/null")[1]
+	if branch == nil or branch == "" or branch == "HEAD" then
+		return ""
+	end
+	return " " .. branch
+end
+
+vim.o.statusline = "%f %y %m %= %{v:lua.git_branch()} %l:%c"
+
+-- File explorer
 require("nvim-tree").setup({
 	disable_netrw = true,
 	sync_root_with_cwd = true,
@@ -52,6 +64,7 @@ require("nvim-tree").setup({
 	},
 })
 
+-- Startup layout
 vim.api.nvim_create_autocmd("VimEnter", {
 	callback = function()
 		-- Initial buffer
@@ -70,6 +83,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
 	end,
 })
 
+-- Utils
 -- Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
 	desc = "Highlight when yanking (copying) text",
