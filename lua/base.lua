@@ -32,3 +32,8 @@ vim.opt.undofile = true
 
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
+
+-- Keymaps
+vim.keymap.set("n", "<leader>w", ":w<CR>", { desc = "Save file" })
+vim.keymap.set("n", "<leader>q", ":q<CR>", { desc = "Quit window" })
+vim.keymap.set("n", "<leader>Q", ":qa<CR>", { desc = "Quit all" })

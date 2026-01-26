@@ -44,6 +44,10 @@
       "rev": "b93dbb9b58a882116b381dcc6ae33acafadfb8ee",
       "src": "https://github.com/nvim-tree/nvim-tree.lua"
     },
+    "nvim-treesitter": {
+      "rev": "568ede7e79172a0fe7c9d631454a97ad968deaf2",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter"
+    },
     "nvim-web-devicons": {
       "rev": "803353450c374192393f5387b6a0176d0972b848",
       "src": "https://github.com/nvim-tree/nvim-web-devicons"
