@@ -22,19 +22,29 @@ vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
 -- Status line
-vim.g.git_branch = ""
-vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter" }, {
-  callback = function()
-    local branch = vim.fn.systemlist("git rev-parse --abbrev-ref HEAD 2>/dev/null")[1]
-    if branch == nil or branch == "" or branch == "HEAD" then
-      vim.g.git_branch = ""
-      return
-    end
-    vim.g.git_branch = " " .. branch
-  end,
+vim.o.laststatus = 3
+vim.o.showtabline = 0 -- optional
+vim.o.ruler = false
+
+-- Cache git branch to avoid computing on every redraw
+_G.cached_git_branch = ""
+local function update_git_branch()
+  local branch = vim.fn.systemlist("git rev-parse --abbrev-ref HEAD 2>/dev/null")[1]
+  _G.cached_git_branch = branch and branch ~= "" and branch or ""
+end
+
+-- Update branch on buffer enter
+vim.api.nvim_create_autocmd({ "BufEnter" }, {
+  callback = update_git_branch,
 })
 
-vim.o.statusline = "%f %y %m %= %{g:git_branch} %l:%c"
+-- Wrap cached branch in a function
+_G.get_git_branch = function()
+  return _G.cached_git_branch or ""
+end
+
+-- Statusline now calls the function
+vim.o.statusline = "%f %y %m %= %{v:lua.get_git_branch()} %l:%c"
 
 -- File explorer
 -- https://github.com/nvim-tree/nvim-tree.lua
@@ -82,7 +92,6 @@ require("nvim-tree").setup({
     },
   },
 })
-vim.api.nvim_set_hl(0, "NvimTreeGitIgnored", { italic = true })
 
 -- Terminal
 _G.term_bufnr = nil
