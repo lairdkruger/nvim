@@ -12,9 +12,19 @@ require('evergarden').setup({
     variant = "fall",
   },
   style = {
+    search = {},
+    incsearch = {},
     keyword = {},
     types = {},
-  }
+  },
+  overrides = function(theme)
+    return {
+      -- highlight all search matches with bg = orange, fg = blue
+      Visual = { bg = theme.surface2 },
+      Search = { bg = theme.surface2 },
+      IncSearch = { bg = theme.surface2 },
+    }
+  end,
 })
 vim.cmd([[colorscheme evergarden]])
 
@@ -94,39 +104,75 @@ require("nvim-tree").setup({
 })
 
 -- Terminal
-_G.term_bufnr = nil
+local Term = {
+  height = 12,
+  bufs = { nil, nil },
+  win_tag = "dual_term",
+}
 
-function open_terminal()
-  vim.cmd("botright split") -- open split at bottom
-  vim.cmd("resize 12")      -- set height
-  vim.cmd("terminal")       -- open terminal
-  local buf = vim.api.nvim_get_current_buf()
-  _G.term_bufnr = buf       -- save buffer number
+local function is_valid_buf(buf)
+  return buf and vim.api.nvim_buf_is_valid(buf)
+end
 
-  vim.api.nvim_buf_set_option(buf, "number", false)
-  vim.api.nvim_buf_set_option(buf, "relativenumber", false)
-  vim.api.nvim_buf_set_option(buf, "signcolumn", "no")
+local function setup_term_buf(buf)
+  vim.bo[buf].buflisted = false
+  vim.bo[buf].swapfile = false
+end
 
-  -- enter insert mode
+local function open_term(index)
+  if not is_valid_buf(Term.bufs[index]) then
+    vim.cmd("terminal")
+    Term.bufs[index] = vim.api.nvim_get_current_buf()
+    setup_term_buf(Term.bufs[index])
+  else
+    vim.api.nvim_set_current_buf(Term.bufs[index])
+  end
+
+  -- window-local UI tweaks
+  vim.wo.number = false
+  vim.wo.relativenumber = false
+  vim.wo.signcolumn = "no"
+
+  -- tag the window
+  vim.w[Term.win_tag] = true
+end
+
+local function terminal_windows()
+  local wins = {}
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    if vim.w[win][Term.win_tag] then
+      table.insert(wins, win)
+    end
+  end
+  return wins
+end
+
+local function open_terminal_pane()
+  -- bottom container
+  vim.cmd("botright split")
+  vim.cmd("resize " .. Term.height)
+  open_term(1)
+
+  -- right terminal
+  vim.cmd("vsplit")
+  open_term(2)
+
   vim.cmd("startinsert")
 end
 
-local function toggle_terminal()
-  if _G.term_bufnr and vim.api.nvim_buf_is_valid(_G.term_bufnr) then
-    -- check if the terminal window is open
-    for _, win in ipairs(vim.api.nvim_list_wins()) do
-      if vim.api.nvim_win_get_buf(win) == _G.term_bufnr then
-        vim.api.nvim_win_close(win, true)
-        return
-      end
+local function close_terminal_pane()
+  for _, win in ipairs(terminal_windows()) do
+    if vim.api.nvim_win_is_valid(win) then
+      vim.api.nvim_win_close(win, true)
     end
-    -- if terminal buffer exists but no window, open it again
-    vim.cmd("botright split")
-    vim.cmd("resize 12")
-    vim.api.nvim_set_current_buf(_G.term_bufnr)
-    vim.cmd("startinsert")
+  end
+end
+
+local function toggle_terminal()
+  if #terminal_windows() > 0 then
+    close_terminal_pane()
   else
-    open_terminal()
+    open_terminal_pane()
   end
 end
 

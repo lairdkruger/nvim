@@ -26,7 +26,7 @@ vim.lsp.config("css_variables", {
 -- Diagnostics configuration
 vim.diagnostic.config({
   severity_sort = true,
-  float = { border = "rounded", source = "if_many" },
+  float = { focusable = false, border = "rounded", source = "if_many" },
   underline = { severity = vim.diagnostic.severity.ERROR },
   signs = vim.g.have_nerd_font and {
     text = {
@@ -61,7 +61,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
   callback = function(event)
     -- LSP keymaps
     vim.keymap.set("n", "gv", vim.lsp.buf.rename, { buffer = event.buf, desc = "LSP: Rename variable" })
-    vim.keymap.set({ "n", "x" }, "ga", vim.lsp.buf.code_action, { buffer = event.buf, desc = "LSP: Code action" })
+    vim.keymap.set(
+      { "n", "x" },
+      "ga",
+      function()
+        vim.lsp.buf.code_action({ apply = true })
+      end,
+      { buffer = event.buf, desc = "LSP: Code action" }
+    )
     vim.keymap.set(
       "n",
       "gd",

@@ -1,7 +1,7 @@
 vim.g.mapleader = " "
 vim.g.have_nerd_font = true
 
-vim.o.updatetime = 300
+vim.o.updatetime = 500
 
 vim.o.clipboard = "unnamedplus"
 
@@ -31,6 +31,7 @@ vim.opt.shiftround = true
 
 vim.opt.swapfile = false
 vim.opt.undofile = true
+vim.opt.autoread = true
 
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
