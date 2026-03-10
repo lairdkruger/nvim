@@ -1,3 +1,5 @@
+require("config.lazy")
+
 require("base")
 require("ui")
 require("lsp")
