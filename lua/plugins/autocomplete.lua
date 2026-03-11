@@ -1,4 +1,9 @@
-return {
-  "https://github.com/saghen/blink.cmp",
-  "https://github.com/github/copilot.vim",
+require("blink.cmp").setup({
+	sources = {
+		default = { "lsp", "path", "buffer" },
+	},
+})
+
+vim.g.copilot_filetypes = {
+	["*"] = true,
 }
