@@ -20,13 +20,14 @@ return {
           "html",
           "rust_analyzer",
           "svelte",
-          "typescript-language-server", -- Corrected from ts_ls
+          "ts_ls",
         },
       })
     end,
   },
   {
     "neovim/nvim-lspconfig",
+        dependencies = { "williamboman/mason-lspconfig.nvim" },
     config = function()
       vim.lsp.config("css_variables", {
         filetypes = { "css", "scss", "less", "html", "svelte", "astro" },
@@ -73,14 +74,22 @@ return {
         end,
       })
 
-      -- Setup LSP servers
+       -- Setup LSP servers
+      local capabilities = require("blink.cmp").get_lsp_capabilities()
+      local mason_lspconfig = require("mason-lspconfig")
       local lspconfig = require("lspconfig")
-      local capabilities = require("cmp_nvim_lsp").default_capabilities()
-      local servers = require("mason-lspconfig").get_installed_servers()
-      for _, server_name in ipairs(servers) do
-        lspconfig[server_name].setup({
-          capabilities = capabilities,
-        })
+
+      for _, server_name in ipairs(mason_lspconfig.get_installed_servers()) do
+        -- Neovim 0.11+ logic
+        if vim.fn.has("nvim-0.11") == 1 then
+          vim.lsp.config(server_name, { capabilities = capabilities })
+          vim.lsp.enable(server_name)
+        else
+          -- Fallback for Neovim 0.10 and older
+          lspconfig[server_name].setup({
+            capabilities = capabilities,
+          })
+        end
       end
     end,
   },

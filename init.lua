@@ -1,10 +1,2 @@
-require("config.lazy")
-
 require("config.base")
-require("config.editor").setup()
-require("config.ui")
-require("config.lsp")
-require("config.format")
-require("config.autocomplete")
-require("config.search")
-require("config.git")
+require("config.lazy")
