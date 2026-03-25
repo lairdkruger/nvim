@@ -63,9 +63,37 @@ return {
 			})
 		end,
 	},
+
 	{
 		"nvim-tree/nvim-web-devicons",
 	},
+
+	{
+		"akinsho/bufferline.nvim",
+		dependencies = "nvim-tree/nvim-web-devicons",
+		config = function()
+			require("bufferline").setup({
+				options = {
+					diagnostics = "nvim_lsp",
+					offsets = {
+						{
+							filetype = "NvimTree",
+							text = "",
+							text_align = "left",
+							separator = true,
+						},
+					},
+					color_icons = false,
+					show_buffer_icons = true,
+					show_buffer_close_icons = false,
+					show_close_icon = false,
+					show_tab_indicators = true,
+					always_show_bufferline = true,
+				},
+			})
+		end,
+	},
+
 	{
 		"codeberg.org/evergarden/nvim",
 		name = "evergarden",
