@@ -33,3 +33,20 @@ vim.api.nvim_create_autocmd("User", {
 		require("nvim-tree.autocmd").global()
 	end,
 })
+
+-- Disable autocomplete in Telescope prompt
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "TelescopePrompt",
+	group = vim.api.nvim_create_augroup("telescope-no-completion", { clear = true }),
+	callback = function()
+		vim.opt_local.autocomplete = false
+	end,
+})
+
+-- Highlight on yank
+vim.api.nvim_create_autocmd("TextYankPost", {
+	group = vim.api.nvim_create_augroup("highlight-yank", { clear = true }),
+	callback = function()
+		vim.highlight.on_yank()
+	end,
+})

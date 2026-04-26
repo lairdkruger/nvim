@@ -47,5 +47,13 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = buf, desc = "LSP: Go to declaration" })
 		-- grn (rename), gra (code action), grx (codelens), gO (doc symbols), K (hover)
 		-- are provided by Neovim 0.12 defaults — no need to re-declare
+
+		-- Wire LSP completion; disable native auto-trigger so Copilot ghost text can show
+		local client = vim.lsp.get_client_by_id(event.data.client_id)
+		if client and client:supports_method("textDocument/completion") then
+			vim.bo[buf].complete = "o"
+			vim.opt_local.autocomplete = false
+			vim.lsp.completion.enable(true, client.id, buf, { autotrigger = true })
+		end
 	end,
 })
