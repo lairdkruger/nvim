@@ -4,6 +4,9 @@ vim.api.nvim_create_autocmd("PackChanged", {
 		if ev.data.spec.name == "nvim-treesitter" and (ev.data.kind == "install" or ev.data.kind == "update") then
 			require("nvim-treesitter").install():wait(300000)
 		end
+		if ev.data.spec.name == "blink.cmp" and (ev.data.kind == "install" or ev.data.kind == "update") then
+			require("blink.cmp").build():wait(60000)
+		end
 	end,
 })
 
@@ -43,6 +46,10 @@ vim.pack.add({
 
 	-- Syntax highlighting (parsers + queries)
 	"https://github.com/nvim-treesitter/nvim-treesitter",
+
+	-- Completion
+	"https://github.com/Saghen/blink.lib",
+	"https://github.com/Saghen/blink.cmp",
 
 	-- AI completion
 	"https://github.com/github/copilot.vim",

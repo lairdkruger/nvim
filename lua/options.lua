@@ -36,12 +36,3 @@ vim.opt.autoread = true
 
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
-
--- Copilot: show ghost text even when completion popup is visible
-vim.g.copilot_hide_during_completion = 0
-
--- Native autocomplete (0.12)
-vim.o.autocomplete = true
-vim.o.completeopt = "menu,menuone,noinsert,popup,nearest"
-vim.o.pumborder = "rounded"
-vim.o.pummaxwidth = 40
